@@ -1,3 +1,4 @@
+
 #include <esim/common/utils.hpp>
 #include <esim/imp_planar_renderer/planar_renderer.hpp>
 
@@ -6,6 +7,7 @@
 #include <glog/logging.h>
 #include <opencv2/core/eigen.hpp>
 #include <ze/common/timer_collection.hpp>
+#include <fstream>
 
 DECLARE_TIMER(TimerPlanarRenderer, timers_planar_renderer,
               compute_remap_maps,
@@ -34,6 +36,11 @@ PlanarRenderer::PlanarRenderer(const Image& texture,
   VLOG(1) << "K_src = " << K_src_;
 
   LOG(INFO) << "T_W_P = " << T_W_P_;
+
+  std::ofstream planar_renderer_info_file_;
+  planar_renderer_info_file_.open("/tmp/planar_renderer_info.txt");
+  planar_renderer_info_file_ << "K:\n" << K_src_ << std::endl << "T_W_P:\n" << T_W_P_ << std::endl;
+  planar_renderer_info_file_.close();
 }
 
 PlanarRenderer::~PlanarRenderer()
