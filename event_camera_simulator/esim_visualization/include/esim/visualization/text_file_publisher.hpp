@@ -24,7 +24,7 @@ public:
 private:
   std::ofstream events_text_file_;
   geometry_msgs::PoseStamped last_pose_;
-  uint32_t last_pose_t_;
+  uint64_t last_pose_t_;
 };
 
 } // namespace event_camera_simulator

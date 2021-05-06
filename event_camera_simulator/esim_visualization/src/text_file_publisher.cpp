@@ -46,12 +46,16 @@ void TextFilePublisher::eventsCallback(const EventsVector& events)
 	events_text_file_ << last_pose_t_ << "," << last_pose_.pose.position.x << "," << last_pose_.pose.position.y << "," <<  last_pose_.pose.position.z << ",";
         events_text_file_ << last_pose_.pose.orientation.x << "," << last_pose_.pose.orientation.y << "," << last_pose_.pose.orientation.z << "," << last_pose_.pose.orientation.w << std::endl;
     }
+
 }
 
 void TextFilePublisher::poseCallback(const Transformation& T_W_B, const TransformationVector& T_W_Cs, Time t)
 {
+    //LOG(INFO) << "t: " << t;
     last_pose_t_ = t;
     tf::poseStampedKindrToMsg(T_W_Cs[0], toRosTime(t), "camera", &last_pose_);
+    //LOG(INFO) << "msg t: " << last_pose_.header.stamp.nsec;
+
     //std::cout << last_pose_t_ << "|" << last_pose_ << std::endl;
 }
 
