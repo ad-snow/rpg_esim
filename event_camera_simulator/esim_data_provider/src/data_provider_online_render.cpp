@@ -109,6 +109,7 @@ DataProviderOnlineMoving3DCameraRig::DataProviderOnlineMoving3DCameraRig(ze::rea
   sampleFrame();
   setAllUpdated();
 
+
   if(callback_)
   {
     callback_(sim_data_);
@@ -161,6 +162,14 @@ void DataProviderOnlineMoving3DCameraRig::updateGroundtruth()
       sim_data_.groundtruth.linear_velocity_obj_[i] = trajectory_dyn_obj_[i]->velocity_W(t_);
       sim_data_.groundtruth.angular_velocity_obj_[i] = sim_data_.groundtruth.T_W_OBJ_[i].getRotation().rotate(trajectory_dyn_obj_[i]->angularVelocity_B(t_));
   }
+}
+
+void DataProviderOnlineMoving3DCameraRig::sampleRendererInfo()
+{
+  sim_data_.renderer.T_W_P_ = renderers_[0]->get_T_W_P();
+  sim_data_.renderer.K_inv_ = renderers_[0]->get_K_inv();
+  sim_data_.renderer_info_updated = true;
+  // LOG(WARNING) << "Data provider\n" << sim_data_.renderer.T_W_P_ <<"\n"<< sim_data_.renderer.K_inv_ <<"\n"<< sim_data_.renderer_info_updated;
 }
 
 void DataProviderOnlineMoving3DCameraRig::sampleImu()
@@ -309,6 +318,7 @@ void DataProviderOnlineMoving3DCameraRig::setImuUpdated()
   sim_data_.images_updated      = false;
   sim_data_.depthmaps_updated   = false;
   sim_data_.optic_flows_updated = false;
+  sim_data_.renderer_info_updated = false;
 }
 
 void DataProviderOnlineMoving3DCameraRig::setFrameUpdated()
@@ -320,6 +330,7 @@ void DataProviderOnlineMoving3DCameraRig::setFrameUpdated()
   sim_data_.images_updated      = true;
   sim_data_.depthmaps_updated   = true;
   sim_data_.optic_flows_updated = true;
+  sim_data_.renderer_info_updated = false;
 }
 
 void DataProviderOnlineMoving3DCameraRig::setAllUpdated()
@@ -331,6 +342,7 @@ void DataProviderOnlineMoving3DCameraRig::setAllUpdated()
   sim_data_.images_updated      = true;
   sim_data_.depthmaps_updated   = true;
   sim_data_.optic_flows_updated = true;
+  sim_data_.renderer_info_updated = false;
 }
 
 bool DataProviderOnlineMoving3DCameraRig::spinOnce()
@@ -361,6 +373,8 @@ bool DataProviderOnlineMoving3DCameraRig::spinOnce()
   VLOG(2) << "next_t_imu = " << next_t_imu;
   VLOG(2) << "next_t_frame = " << next_t_frame;
   VLOG(2) << "next_t_flow = " << next_t_flow_;
+
+  bool get_renderer_info = (t_ == trajectory_->start());
 
   if(next_t_imu < next_t_frame && next_t_imu < next_t_flow_)
   {
@@ -393,6 +407,11 @@ bool DataProviderOnlineMoving3DCameraRig::spinOnce()
     setAllUpdated();
   }
 
+  if (get_renderer_info)
+  {
+    sampleRendererInfo();
+  }
+  
   if(t_ > trajectory_->end())
   {
     running_ = false;

@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <sys/stat.h>
 
@@ -76,16 +77,20 @@ int main(int argc, char** argv)
 
   std::ifstream index_file;
   index_file.open(FLAGS_textures_folder + "/index_file.txt");
-  std::string file_name;
+  std::string index_line;
+  std::string scene_filename;
+  std::string corners_filename;
   int file_counter = 0;
   if (!index_file.is_open())
   {
     LOG(FATAL) << "Couldn't open index file at:" << FLAGS_textures_folder + "/index_file.txt";
   }
-  while(std::getline(index_file, file_name))
+  while(std::getline(index_file, index_line))
   {
-    LOG(WARNING) << file_name;
-    DataProviderBase::Ptr data_provider_ = loadDataProviderFromGflags(FLAGS_textures_folder + "/" + file_name);
+    LOG(WARNING) << index_line;
+    std::stringstream ss(index_line);
+    ss >> scene_filename >> corners_filename;
+    DataProviderBase::Ptr data_provider_ = loadDataProviderFromGflags(FLAGS_textures_folder + "/" + scene_filename.c_str());
     CHECK(data_provider_);
 
     sim.reset(new Simulator(data_provider_->numCameras(),
@@ -95,7 +100,8 @@ int main(int argc, char** argv)
     sim->setMaxEvents(FLAGS_max_events);
 
     mkdir(FLAGS_output_folder.c_str(), 0777);
-    Publisher::Ptr my_publisher = TextFilePublisher::createFromGflags(FLAGS_output_folder + "/events_" + std::to_string(file_counter) + ".csv");
+    Publisher::Ptr my_publisher = TextFilePublisher::createFromGflags(FLAGS_textures_folder + "/" + corners_filename.c_str(),
+                                                                      FLAGS_output_folder + "/events_" + std::to_string(file_counter) + ".csv");
     if(my_publisher) sim->addPublisher(my_publisher);
 
     data_provider_->registerCallback(
@@ -103,6 +109,8 @@ int main(int argc, char** argv)
                     std::placeholders::_1));
 
     data_provider_->spin();
+
+    file_counter += 1;
   }
 
   

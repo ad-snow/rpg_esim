@@ -23,7 +23,7 @@ public:
   virtual void imuCallback(const Vector3& acc, const Vector3& gyr, Time t) {}
   virtual void cameraInfoCallback(const ze::CameraRig::Ptr& camera_rig, Time t) {}
   virtual void pointcloudCallback(const PointCloudVector& pointclouds, Time t) {}
-
+  virtual void rendererInfoCallback(const Transformation& T_W_P, const CalibrationMatrix& K_inv, Time t) {}
 };
 
 } // namespace event_camera_simulator

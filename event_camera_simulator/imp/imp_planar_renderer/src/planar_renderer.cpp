@@ -37,15 +37,24 @@ PlanarRenderer::PlanarRenderer(const Image& texture,
 
   LOG(INFO) << "T_W_P = " << T_W_P_;
 
-  std::ofstream planar_renderer_info_file_;
-  planar_renderer_info_file_.open("/tmp/planar_renderer_info.txt");
-  planar_renderer_info_file_ << "K:\n" << K_src_ << std::endl << "T_W_P:\n" << T_W_P_ << std::endl;
-  planar_renderer_info_file_.close();
+  // std::ofstream planar_renderer_info_file_;
+  // planar_renderer_info_file_.open("/tmp/planar_renderer_info.txt");
+  // planar_renderer_info_file_ << "K:\n" << K_src_ << std::endl << "T_W_P:\n" << T_W_P_ << std::endl;
+  // planar_renderer_info_file_.close();
 }
 
 PlanarRenderer::~PlanarRenderer()
 {
   timers_planar_renderer.saveToFile("/tmp", "planar_renderer.csv");
+}
+
+Transformation PlanarRenderer::get_T_W_P()
+{
+  return T_W_P_;
+}
+CalibrationMatrix PlanarRenderer::get_K_inv()
+{
+  return K_src_inv_;
 }
 
 void PlanarRenderer::setCamera(const ze::Camera::Ptr& camera)

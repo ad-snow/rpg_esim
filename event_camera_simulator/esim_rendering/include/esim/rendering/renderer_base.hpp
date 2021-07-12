@@ -42,6 +42,9 @@ public:
   //! Get the camera rig
   const ze::Camera::Ptr& getCamera() const { return camera_; }
 
+  virtual Transformation get_T_W_P() {};
+  virtual CalibrationMatrix get_K_inv() {};
+
 protected:
   ze::Camera::Ptr camera_;
 };

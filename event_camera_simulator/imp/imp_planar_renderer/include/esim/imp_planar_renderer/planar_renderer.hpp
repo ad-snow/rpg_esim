@@ -31,6 +31,9 @@ public:
 
   virtual void setCamera(const ze::Camera::Ptr& camera) override;
 
+  Transformation get_T_W_P();
+  CalibrationMatrix get_K_inv();
+
 protected:
 
   void precomputePixelToBearingLookupTable();

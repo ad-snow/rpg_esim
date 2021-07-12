@@ -22,7 +22,8 @@ void Simulator::setMaxEvents(const int max)
 bool Simulator::dataProviderCallback(const SimulatorData &sim_data)
 {
   CHECK_EQ(event_simulators_.size(), num_cameras_);
-
+  
+  // LOG(WARNING) << "Simulator: " << sim_data.renderer_info_updated;
   bool camera_simulator_success;
   bool should_continue = true;
 
@@ -91,15 +92,32 @@ void Simulator::publishData(const SimulatorData& sim_data,
   const ze::CameraRig::Ptr& camera_rig = sim_data.camera_rig;
 
   // Publish the new data (events, images, depth maps, poses, point clouds, etc.)
-  if(!events.empty())
+  // LOG(WARNING) << "camera info";
+  if(camera_rig)
   {
     for(const Publisher::Ptr& publisher : publishers_)
-      publisher->eventsCallback(events);
+      publisher->cameraInfoCallback(camera_rig, time);
   }
+  // LOG(WARNING) << "renderer info";
+  if(sim_data.renderer_info_updated)
+  {
+    for(const Publisher::Ptr& publisher : publishers_)
+      publisher->rendererInfoCallback(sim_data.renderer.T_W_P_, sim_data.renderer.K_inv_, time);
+  }
+  // else{
+  //   LOG(WARNING) << "renderer info not updated";
+  // }
+  // LOG(WARNING) << "pose";
   if(sim_data.poses_updated)
   {
     for(const Publisher::Ptr& publisher : publishers_)
       publisher->poseCallback(T_W_B, T_W_Cs, time);
+  }
+  // LOG(WARNING) << "events";
+  if(!events.empty())
+  {
+    for(const Publisher::Ptr& publisher : publishers_)
+      publisher->eventsCallback(events);
   }
   if(sim_data.twists_updated)
   {
@@ -112,12 +130,6 @@ void Simulator::publishData(const SimulatorData& sim_data,
   {
     for(const Publisher::Ptr& publisher : publishers_)
       publisher->imuCallback(sim_data.specific_force_corrupted, sim_data.angular_velocity_corrupted, time);
-  }
-
-  if(camera_rig)
-  {
-    for(const Publisher::Ptr& publisher : publishers_)
-      publisher->cameraInfoCallback(camera_rig, time);
   }
   if(sim_data.images_updated)
   {

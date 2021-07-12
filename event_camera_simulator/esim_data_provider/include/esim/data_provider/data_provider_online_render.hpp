@@ -44,6 +44,7 @@ public:
 private:
 
   void updateGroundtruth();
+  void sampleRendererInfo();
   void sampleImu();
   void sampleFrame();
 

@@ -32,6 +32,8 @@ public:
   virtual void imuCallback(const Vector3& acc, const Vector3& gyr, Time t) override {}
   virtual void cameraInfoCallback(const ze::CameraRig::Ptr& camera_rig, Time t) override {}
   virtual void pointcloudCallback(const PointCloudVector& pointclouds, Time t) override {}
+  virtual void rendererInfoCallback(const Transformation& T_W_P, const CalibrationMatrix& K_inv, Time t) override {}
+
 
   static Publisher::Ptr createFromGflags();
 

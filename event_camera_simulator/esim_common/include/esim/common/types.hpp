@@ -148,6 +148,13 @@ struct SimulatorData
   };
   Groundtruth groundtruth;
 
+  struct Render
+  {
+    Transformation T_W_P_;
+    CalibrationMatrix K_inv_;
+  };
+  Render renderer;
+
   // Flags to indicate whether a value has been updated or not
   bool images_updated;
   bool depthmaps_updated;
@@ -155,6 +162,7 @@ struct SimulatorData
   bool twists_updated;
   bool poses_updated;
   bool imu_updated;
+  bool renderer_info_updated;
 };
 
 } // namespace event_camera_simulator
