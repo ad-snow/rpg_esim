@@ -21,7 +21,9 @@ public:
             const EventSimulator::Config& event_sim_config,
             double exposure_time_ms)
     : num_cameras_(num_cameras),
-      exposure_time_(ze::millisecToNanosec(exposure_time_ms))
+      exposure_time_(ze::millisecToNanosec(exposure_time_ms)),
+      max_events_(0),
+      events_counter_(0)
   {
     for(size_t i=0; i<num_cameras_; ++i)
     {
@@ -38,12 +40,14 @@ public:
     publishers_.push_back(std::move(publisher));
   }
 
-  void dataProviderCallback(const SimulatorData& sim_data);
+  bool dataProviderCallback(const SimulatorData& sim_data);
 
   void publishData(const SimulatorData &sim_data,
                    const EventsVector &events,
                    bool camera_simulator_success,
                    const ImagePtrVector &camera_images);
+                  
+  void setMaxEvents(const int max);
 
 private:
   size_t num_cameras_;
@@ -55,6 +59,9 @@ private:
   std::vector<Publisher::Ptr> publishers_;
 
   ImagePtrVector corrupted_camera_images_;
+
+  int max_events_;
+  int events_counter_;
 };
 
 } // namespace event_camera_simulator

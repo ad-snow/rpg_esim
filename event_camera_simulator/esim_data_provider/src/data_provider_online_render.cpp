@@ -32,10 +32,12 @@ DataProviderOnlineMoving3DCameraRig::DataProviderOnlineMoving3DCameraRig(ze::rea
     simulation_adaptive_sampling_method_(simulation_adaptive_sampling_method),
     simulation_adaptive_sampling_lambda_(simulation_adaptive_sampling_lambda),
     dt_imu_(1./simulation_imu_rate),
-    dt_frame_(1./simulation_minimum_framerate)
+    dt_frame_(1./simulation_minimum_framerate),
+    enough_events_(false)
 {
   CHECK(simulation_adaptive_sampling_method == 0
         || simulation_adaptive_sampling_method == 1);
+
 
   std::tie(trajectory_, trajectory_dyn_obj_) = loadTrajectorySimulatorFromGflags();
   imu_ = loadImuSimulatorFromGflags(trajectory_);
@@ -106,6 +108,7 @@ DataProviderOnlineMoving3DCameraRig::DataProviderOnlineMoving3DCameraRig(ze::rea
   sampleImu();
   sampleFrame();
   setAllUpdated();
+
   if(callback_)
   {
     callback_(sim_data_);
@@ -399,7 +402,7 @@ bool DataProviderOnlineMoving3DCameraRig::spinOnce()
   if(callback_)
   {
     sim_data_.timestamp = static_cast<Time>(ze::secToNanosec(t_));
-    callback_(sim_data_);
+    enough_events_ = !callback_(sim_data_);
   }
   else
   {
@@ -413,6 +416,11 @@ bool DataProviderOnlineMoving3DCameraRig::ok() const
   if (!running_)
   {
     VLOG(1) << "Data Provider was paused/terminated.";
+    return false;
+  }
+  if (enough_events_)
+  {
+    VLOG(1) << "Simulator received enough events.";
     return false;
   }
   return true;

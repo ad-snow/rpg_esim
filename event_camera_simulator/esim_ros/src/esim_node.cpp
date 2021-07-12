@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sys/stat.h>
 
 DEFINE_double(contrast_threshold_pos, 1.0,
               "Contrast threshold (positive)");
@@ -44,6 +45,12 @@ DEFINE_int32(random_seed, 0,
 DEFINE_string(textures_folder, "",
               "Path to folder containing images which will be used to texture the plane");
 
+DEFINE_string(output_folder, "",
+              "Path to output folder");
+
+DEFINE_int32(max_events, 0,
+             "Maximum number of events to simulate");
+
 using namespace event_camera_simulator;
 
 int main(int argc, char** argv)
@@ -70,28 +77,32 @@ int main(int argc, char** argv)
   std::ifstream index_file;
   index_file.open(FLAGS_textures_folder + "/index_file.txt");
   std::string file_name;
-  if(index_file.is_open())
+  int file_counter = 0;
+  if (!index_file.is_open())
   {
-    while(index_file)
-    {
-      std::getline(index_file, file_name);
-      DataProviderBase::Ptr data_provider_ = loadDataProviderFromGflags(FLAGS_textures_folder + "/" + file_name);
-      CHECK(data_provider_);
+    LOG(FATAL) << "Couldn't open index file at:" << FLAGS_textures_folder + "/index_file.txt";
+  }
+  while(std::getline(index_file, file_name))
+  {
+    LOG(WARNING) << file_name;
+    DataProviderBase::Ptr data_provider_ = loadDataProviderFromGflags(FLAGS_textures_folder + "/" + file_name);
+    CHECK(data_provider_);
 
-      sim.reset(new Simulator(data_provider_->numCameras(),
-                          event_sim_config,
-                          FLAGS_exposure_time_ms));
-      CHECK(sim);
+    sim.reset(new Simulator(data_provider_->numCameras(),
+                        event_sim_config,
+                        FLAGS_exposure_time_ms));
+    CHECK(sim);
+    sim->setMaxEvents(FLAGS_max_events);
 
-      Publisher::Ptr my_publisher = TextFilePublisher::createFromGflags(data_provider_->numCameras());
-      if(my_publisher) sim->addPublisher(my_publisher);
+    mkdir(FLAGS_output_folder.c_str(), 0777);
+    Publisher::Ptr my_publisher = TextFilePublisher::createFromGflags(FLAGS_output_folder + "/events_" + std::to_string(file_counter) + ".csv");
+    if(my_publisher) sim->addPublisher(my_publisher);
 
-      data_provider_->registerCallback(
-            std::bind(&Simulator::dataProviderCallback, sim.get(),
-                      std::placeholders::_1));
+    data_provider_->registerCallback(
+          std::bind(&Simulator::dataProviderCallback, sim.get(),
+                    std::placeholders::_1));
 
-      data_provider_->spin();
-    }
+    data_provider_->spin();
   }
 
   

@@ -14,11 +14,17 @@ Simulator::~Simulator()
   timers_event_simulator_.saveToFile("/tmp", "event_simulator.csv");
 }
 
-void Simulator::dataProviderCallback(const SimulatorData &sim_data)
+void Simulator::setMaxEvents(const int max) 
+{
+  max_events_ = max;
+}
+
+bool Simulator::dataProviderCallback(const SimulatorData &sim_data)
 {
   CHECK_EQ(event_simulators_.size(), num_cameras_);
 
   bool camera_simulator_success;
+  bool should_continue = true;
 
   if(sim_data.images_updated)
   {
@@ -47,6 +53,15 @@ void Simulator::dataProviderCallback(const SimulatorData &sim_data)
       auto t = timers_event_simulator_[TimerEventSimulator::visualization].timeScope();
       publishData(sim_data, events, camera_simulator_success, corrupted_camera_images_);
     }
+    events_counter_ += events[0].size();
+    if (max_events_ > 0 && events_counter_ > max_events_)
+    {
+      should_continue = false;
+    }
+    else
+    {
+      // LOG(WARNING) << max_events_ << "," << events_counter_;
+    }
   }
   else
   {
@@ -56,6 +71,7 @@ void Simulator::dataProviderCallback(const SimulatorData &sim_data)
       publishData(sim_data, {}, camera_simulator_success, corrupted_camera_images_);
     }
   }
+  return should_continue;
 }
 
 void Simulator::publishData(const SimulatorData& sim_data,

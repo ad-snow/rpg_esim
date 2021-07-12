@@ -71,6 +71,8 @@ private:
 
   // dynamic objects
   std::vector<ze::TrajectorySimulator::Ptr> trajectory_dyn_obj_;
+
+  volatile bool enough_events_;
 };
 
 } // namespace event_camera_simulator

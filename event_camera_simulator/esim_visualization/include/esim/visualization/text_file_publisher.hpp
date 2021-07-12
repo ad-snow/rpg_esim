@@ -12,13 +12,13 @@ namespace event_camera_simulator {
 class TextFilePublisher : public Publisher
 {
 public:
-  TextFilePublisher(const std::string& path_to_events_text_file, size_t num_cameras);
+  TextFilePublisher(const std::string& path_to_events_text_file);
   ~TextFilePublisher();
 
   virtual void eventsCallback(const EventsVector& events) override; // will be called when new events are available
    virtual void poseCallback(const Transformation& T_W_B, const TransformationVector& T_W_Cs, Time t) override;
 
-  static Publisher::Ptr createFromGflags(size_t num_cameras);
+  static Publisher::Ptr createFromGflags(const std::string& path_to_events_text_file);
 
 
 private:

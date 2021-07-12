@@ -11,9 +11,8 @@ DEFINE_string(path_to_events_text_file, "",
 
 namespace event_camera_simulator {
 
-TextFilePublisher::TextFilePublisher(const std::string& path_to_events_text_file, size_t num_cameras)
+TextFilePublisher::TextFilePublisher(const std::string& path_to_events_text_file)
 {
-  CHECK_EQ(num_cameras, 1) << "TextFilePublisher implemented for one camera only";
   events_text_file_.open(path_to_events_text_file);
   events_text_file_ << "t,x,y,p,last_camera_pose:t,x,y,z,wx,wy,wz,ww" << std::endl;
   last_pose_ = geometry_msgs::PoseStamped();
@@ -25,16 +24,15 @@ TextFilePublisher::~TextFilePublisher()
     events_text_file_.close();
 }
 
-Publisher::Ptr TextFilePublisher::createFromGflags(size_t num_cameras)
+Publisher::Ptr TextFilePublisher::createFromGflags(const std::string& path_to_events_text_file)
 {
-  if(FLAGS_path_to_events_text_file == "")
+  if(path_to_events_text_file == "")
   {
     LOG(WARNING) << "Empty events text file path: will not write events to a text file.";
     return nullptr;
   }
 
-  return std::make_shared<TextFilePublisher>(FLAGS_path_to_events_text_file,
-                                             num_cameras);
+  return std::make_shared<TextFilePublisher>(path_to_events_text_file);
 }
 
 void TextFilePublisher::eventsCallback(const EventsVector& events)

@@ -17,7 +17,7 @@ class Mat;
 namespace event_camera_simulator {
 
 using Callback =
-  std::function<void (const SimulatorData& sim_data)>;
+  std::function<bool (const SimulatorData& sim_data)>;
 
 enum class DataProviderType {
   RendererOnline,
