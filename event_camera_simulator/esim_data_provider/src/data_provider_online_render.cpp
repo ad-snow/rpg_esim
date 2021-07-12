@@ -24,7 +24,8 @@ namespace event_camera_simulator {
 DataProviderOnlineMoving3DCameraRig::DataProviderOnlineMoving3DCameraRig(ze::real_t simulation_minimum_framerate,
                                                    ze::real_t simulation_imu_rate,
                                                    int simulation_adaptive_sampling_method,
-                                                   ze::real_t simulation_adaptive_sampling_lambda)
+                                                   ze::real_t simulation_adaptive_sampling_lambda,
+                                                   const std::string& path_to_texture)
   : DataProviderBase(DataProviderType::RendererOnline),
     simulation_minimum_framerate_(simulation_minimum_framerate),
     simulation_imu_rate_(simulation_imu_rate),
@@ -66,7 +67,7 @@ DataProviderOnlineMoving3DCameraRig::DataProviderOnlineMoving3DCameraRig(ze::rea
 
   for(size_t i=0; i<camera_rig_->size(); ++i)
   {
-    renderers_.push_back(std::move(loadRendererFromGflags()));
+    renderers_.push_back(std::move(loadRendererFromGflags(path_to_texture)));
     renderers_[i]->setCamera(camera_rig_->atShared(i));
 
     optic_flow_helpers_.emplace_back(std::make_shared<OpticFlowHelper>(camera_rig_->atShared(i)));

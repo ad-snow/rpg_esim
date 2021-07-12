@@ -69,11 +69,11 @@ namespace event_camera_simulator {
 bool loadPreprocessedImage(const std::string& path_to_img, cv::Mat* img)
 {
   CHECK(img);
-  VLOG(1) << "Loading texture file from file: " << FLAGS_renderer_texture << ".";
+  VLOG(1) << "Loading texture file from file: " << path_to_img << ".";
   *img = cv::imread(path_to_img, 0);
   if(!img->data)
   {
-    LOG(FATAL) << "Could not open image at: " << FLAGS_renderer_texture << ".";
+    LOG(FATAL) << "Could not open image at: " << path_to_img << ".";
     return false;
   }
 

@@ -7,7 +7,7 @@
 namespace event_camera_simulator {
 
 bool loadPreprocessedImage(const std::string& path_to_img, cv::Mat *img);
-Renderer::Ptr loadRendererFromGflags();
+Renderer::Ptr loadRendererFromGflags(const std::string& path_to_texture);
 SimpleRenderer::Ptr loadSimpleRendererFromGflags();
 
 } // namespace event_camera_simulator

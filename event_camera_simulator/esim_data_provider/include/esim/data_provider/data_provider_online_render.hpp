@@ -30,7 +30,8 @@ public:
   DataProviderOnlineMoving3DCameraRig(ze::real_t simulation_minimum_framerate,
                            ze::real_t simulation_imu_rate,
                            int simulation_adaptive_sampling_method,
-                           ze::real_t simulation_adaptive_sampling_lambda);
+                           ze::real_t simulation_adaptive_sampling_lambda,
+                           const std::string& path_to_texture);
 
   virtual ~DataProviderOnlineMoving3DCameraRig();
 

@@ -5,6 +5,6 @@
 
 namespace event_camera_simulator {
 
-DataProviderBase::Ptr loadDataProviderFromGflags();
+DataProviderBase::Ptr loadDataProviderFromGflags(const std::string& path_to_texture);
 
 } // namespace ze

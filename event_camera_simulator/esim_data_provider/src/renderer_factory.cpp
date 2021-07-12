@@ -72,11 +72,11 @@ namespace event_camera_simulator {
 bool loadPreprocessedImage(const std::string& path_to_img, cv::Mat* img)
 {
   CHECK(img);
-  VLOG(1) << "Loading texture file from file: " << FLAGS_renderer_texture << ".";
+  VLOG(1) << "Loading texture file from file: " << path_to_img << ".";
   *img = cv::imread(path_to_img, 0);
   if(!img->data)
   {
-    LOG(FATAL) << "Could not open image at: " << FLAGS_renderer_texture << ".";
+    LOG(FATAL) << "Could not open image at: " << path_to_img << ".";
     return false;
   }
 
@@ -99,8 +99,18 @@ bool loadPreprocessedImage(const std::string& path_to_img, cv::Mat* img)
   return true;
 }
 
-Renderer::Ptr loadRendererFromGflags()
+Renderer::Ptr loadRendererFromGflags(const std::string& path_to_texture)
 {
+  std::string texture_path;
+  if (path_to_texture.empty())
+  {
+    texture_path = FLAGS_renderer_texture;
+  }
+  else
+  {
+    texture_path = path_to_texture;
+  }
+
   Renderer::Ptr renderer;
 
   switch (FLAGS_renderer_type)
@@ -108,7 +118,7 @@ Renderer::Ptr loadRendererFromGflags()
     case 0: // Planar renderer
     {
       cv::Mat img_src;
-      if(!loadPreprocessedImage(FLAGS_renderer_texture, &img_src))
+      if(!loadPreprocessedImage(texture_path, &img_src))
       {
         return nullptr;
       }

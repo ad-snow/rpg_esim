@@ -41,7 +41,7 @@ DEFINE_uint64(num_cams, 1, "Number of normal cameras to read from rosbag.");
 
 namespace event_camera_simulator {
 
-DataProviderBase::Ptr loadDataProviderFromGflags()
+DataProviderBase::Ptr loadDataProviderFromGflags(const std::string& path_to_texture)
 {
   // Create data provider.
   DataProviderBase::Ptr data_provider;
@@ -53,7 +53,8 @@ DataProviderBase::Ptr loadDataProviderFromGflags()
             new DataProviderOnlineMoving3DCameraRig(FLAGS_simulation_minimum_framerate,
                                          FLAGS_simulation_imu_rate,
                                          FLAGS_simulation_adaptive_sampling_method,
-                                         FLAGS_simulation_adaptive_sampling_lambda));
+                                         FLAGS_simulation_adaptive_sampling_lambda,
+                                         path_to_texture));
       break;
     }
     case 1: // Online Renderer Simple
