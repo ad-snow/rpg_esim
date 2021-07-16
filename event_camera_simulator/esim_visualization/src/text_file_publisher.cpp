@@ -25,16 +25,27 @@ TextFilePublisher::TextFilePublisher(const std::string& corner_filename, const s
   num_corners_ = std::stoi(corner_line);
   if (num_corners_ > 0)
   {
-    corners_P_.resize(3, num_corners_);
-    bearings_P_.resize(3, num_corners_);
-    corners_C_.resize(2, num_corners_);
+    corners_P_.resize(3, 9*num_corners_);
+    bearings_P_.resize(3, 9*num_corners_);
+    corners_C_.resize(2, 9*num_corners_);
     std::string x_str, y_str;
+    float x, y;
     for (int i=0; i<num_corners_; ++i)
     {
       std::getline(corner_file, corner_line);
       std::stringstream ss(corner_line);
       ss >> x_str >> y_str;
-      corners_P_.col(i) = ze::Bearing(std::stof(x_str), std::stof(y_str), 1.0);
+      x = std::stof(x_str);
+      y = std::stof(y_str);
+      corners_P_.col(9*i) = ze::Bearing(x, y, 1.0);
+      corners_P_.col(9*i+1) = ze::Bearing(-x, -y, 1.0);
+      corners_P_.col(9*i+2) = ze::Bearing(x, -y, 1.0);
+      corners_P_.col(9*i+3) = ze::Bearing(3200-x, -y, 1.0);
+      corners_P_.col(9*i+4) = ze::Bearing(-x, y, 1.0);
+      corners_P_.col(9*i+5) = ze::Bearing(3200-x, y, 1.0);
+      corners_P_.col(9*i+6) = ze::Bearing(-x, 2400-y, 1.0);
+      corners_P_.col(9*i+7) = ze::Bearing(x, 2400-y, 1.0);
+      corners_P_.col(9*i+8) = ze::Bearing(3200-x, 2400-y, 1.0);
     }
   }
 }
