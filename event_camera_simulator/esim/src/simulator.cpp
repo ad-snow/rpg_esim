@@ -52,7 +52,7 @@ bool Simulator::dataProviderCallback(const SimulatorData &sim_data)
     // publish the simulation data + events
     {
       auto t = timers_event_simulator_[TimerEventSimulator::visualization].timeScope();
-      publishData(sim_data, events, camera_simulator_success, corrupted_camera_images_);
+      should_continue = publishData(sim_data, events, camera_simulator_success, corrupted_camera_images_);
     }
     events_counter_ += events[0].size();
     if (max_events_ > 0 && events_counter_ > max_events_)
@@ -69,13 +69,13 @@ bool Simulator::dataProviderCallback(const SimulatorData &sim_data)
     {
       // just forward the simulation data to the publisher
       auto t = timers_event_simulator_[TimerEventSimulator::visualization].timeScope();
-      publishData(sim_data, {}, camera_simulator_success, corrupted_camera_images_);
+      should_continue = publishData(sim_data, {}, camera_simulator_success, corrupted_camera_images_);
     }
   }
   return should_continue;
 }
 
-void Simulator::publishData(const SimulatorData& sim_data,
+bool Simulator::publishData(const SimulatorData& sim_data,
                             const EventsVector& events,
                             bool camera_simulator_success,
                             const ImagePtrVector& camera_images)
@@ -83,13 +83,14 @@ void Simulator::publishData(const SimulatorData& sim_data,
   if(publishers_.empty())
   {
     LOG_FIRST_N(WARNING, 1) << "No publisher available";
-    return;
+    return false;
   }
 
   Time time = sim_data.timestamp;
   const Transformation& T_W_B = sim_data.groundtruth.T_W_B;
   const TransformationVector& T_W_Cs = sim_data.groundtruth.T_W_Cs;
   const ze::CameraRig::Ptr& camera_rig = sim_data.camera_rig;
+  bool should_run = true;
 
   // Publish the new data (events, images, depth maps, poses, point clouds, etc.)
   // LOG(WARNING) << "camera info";
@@ -117,7 +118,7 @@ void Simulator::publishData(const SimulatorData& sim_data,
   if(!events.empty())
   {
     for(const Publisher::Ptr& publisher : publishers_)
-      publisher->eventsCallback(events);
+      should_run = should_run && publisher->eventsCallback(events);
   }
   if(sim_data.twists_updated)
   {
@@ -166,6 +167,7 @@ void Simulator::publishData(const SimulatorData& sim_data,
     for(const Publisher::Ptr& publisher : publishers_)
       publisher->pointcloudCallback(pointclouds, time);
   }
+  return should_run;
 }
 
 } // namespace event_camera_simulator

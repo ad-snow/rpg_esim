@@ -122,7 +122,7 @@ void AdaptiveSamplingBenchmarkPublisher::opticFlowCallback(const OpticFlowPtrVec
 }
 
 
-void AdaptiveSamplingBenchmarkPublisher::eventsCallback(const EventsVector& events)
+bool AdaptiveSamplingBenchmarkPublisher::eventsCallback(const EventsVector& events)
 {
   CHECK_EQ(events.size(), 1);
 
@@ -130,6 +130,7 @@ void AdaptiveSamplingBenchmarkPublisher::eventsCallback(const EventsVector& even
   {
      events_file_ << e.t << " " << e.x << " " << e.y << " " << (e.pol? 1 : 0) << std::endl;
   }
+  return true;
 }
 
 } // namespace event_camera_simulator

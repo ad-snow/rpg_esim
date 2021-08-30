@@ -22,7 +22,7 @@ public:
     }
   }
 
-  virtual void eventsCallback(const EventsVector& events) override;
+  virtual bool eventsCallback(const EventsVector& events) override;
   virtual void opticFlowCallback(const OpticFlowPtrVector& optic_flows, Time t)  override {}
 
   virtual void imageCorruptedCallback(const ImagePtrVector& corrupted_images, Time t) override {}

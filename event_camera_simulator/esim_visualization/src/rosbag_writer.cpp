@@ -190,7 +190,7 @@ void RosbagWriter::opticFlowCallback(const OpticFlowPtrVector& optic_flows, Time
   last_published_optic_flow_time_ = t;
 }
 
-void RosbagWriter::eventsCallback(const EventsVector& events)
+bool RosbagWriter::eventsCallback(const EventsVector& events)
 {
   for(size_t i=0; i<num_cameras_; ++i)
   {
@@ -211,6 +211,7 @@ void RosbagWriter::eventsCallback(const EventsVector& events)
     bag_.write(getTopicName(topic_name_prefix_, i, "events"),
                msg->header.stamp, msg);
   }
+  return true;
 }
 
 void RosbagWriter::poseCallback(const Transformation& T_W_B,

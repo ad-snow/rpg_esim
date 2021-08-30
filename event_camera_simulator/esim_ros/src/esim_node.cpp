@@ -101,32 +101,31 @@ int main(int argc, char** argv)
 
     mkdir(FLAGS_output_folder.c_str(), 0777);
     Publisher::Ptr my_publisher = TextFilePublisher::createFromGflags(FLAGS_textures_folder + "/" + corners_filename.c_str(),
-                                                                      FLAGS_output_folder + "/events_" + std::to_string(file_counter) + ".csv");
+                                                                      FLAGS_output_folder + "/events_" + std::to_string(file_counter));
     if(my_publisher) sim->addPublisher(my_publisher);
 
     data_provider_->registerCallback(
           std::bind(&Simulator::dataProviderCallback, sim.get(),
                     std::placeholders::_1));
 
+
+    Publisher::Ptr ros_publisher = std::make_shared<RosPublisher>(data_provider_->numCameras());
+    //   Publisher::Ptr rosbag_writer = RosbagWriter::createBagWriterFromGflags(data_provider_->numCameras());
+    //   Publisher::Ptr adaptive_sampling_benchmark_publisher
+    //       = AdaptiveSamplingBenchmarkPublisher::createFromGflags();
+
+    Publisher::Ptr synthetic_optic_flow_publisher
+        = SyntheticOpticFlowPublisher::createFromGflags();
+
+
+    if(ros_publisher) sim->addPublisher(ros_publisher);
+    //   if(rosbag_writer) sim->addPublisher(rosbag_writer);
+    //   if(adaptive_sampling_benchmark_publisher) sim->addPublisher(adaptive_sampling_benchmark_publisher);
+    if(synthetic_optic_flow_publisher) sim->addPublisher(synthetic_optic_flow_publisher);
+
+
     data_provider_->spin();
 
-    file_counter += 1;
+    file_counter += 1;  
   }
-
-  
-
-//   Publisher::Ptr ros_publisher = std::make_shared<RosPublisher>(data_provider_->numCameras());
-//   Publisher::Ptr rosbag_writer = RosbagWriter::createBagWriterFromGflags(data_provider_->numCameras());
-//   Publisher::Ptr adaptive_sampling_benchmark_publisher
-//       = AdaptiveSamplingBenchmarkPublisher::createFromGflags();
-
-//   Publisher::Ptr synthetic_optic_flow_publisher
-//       = SyntheticOpticFlowPublisher::createFromGflags();
-
-
-//   if(ros_publisher) sim->addPublisher(ros_publisher);
-//   if(rosbag_writer) sim->addPublisher(rosbag_writer);
-//   if(adaptive_sampling_benchmark_publisher) sim->addPublisher(adaptive_sampling_benchmark_publisher);
-//   if(synthetic_optic_flow_publisher) sim->addPublisher(synthetic_optic_flow_publisher);
-
 }

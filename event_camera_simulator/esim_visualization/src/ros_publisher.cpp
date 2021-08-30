@@ -264,7 +264,7 @@ void RosPublisher::opticFlowCallback(const OpticFlowPtrVector& optic_flows, Time
   last_published_optic_flow_time_ = t;
 }
 
-void RosPublisher::eventsCallback(const EventsVector& events)
+bool RosPublisher::eventsCallback(const EventsVector& events)
 {
   CHECK_EQ(event_pub_.size(), num_cameras_);
 
@@ -291,6 +291,7 @@ void RosPublisher::eventsCallback(const EventsVector& events)
     eventsToMsg(events[i], sensor_sizes_[i].width, sensor_sizes_[i].height, msg);
     event_pub_[i]->publish(msg);
   }
+  return true;
 }
 
 void RosPublisher::poseCallback(const Transformation& T_W_B,

@@ -91,7 +91,7 @@ SyntheticOpticFlowPublisher::~SyntheticOpticFlowPublisher()
   events_file_.close();
 }
 
-void SyntheticOpticFlowPublisher::eventsCallback(const EventsVector& events)
+bool SyntheticOpticFlowPublisher::eventsCallback(const EventsVector& events)
 {
   CHECK_EQ(events.size(), 1);
 
@@ -102,6 +102,7 @@ void SyntheticOpticFlowPublisher::eventsCallback(const EventsVector& events)
      events_file_ << e.t << " " << e.x << " " << e.y << " " << (e.pol? 1 : 0) << std::endl;
      events_.push_back(e);
   }
+  return true;
 }
 
 } // namespace event_camera_simulator

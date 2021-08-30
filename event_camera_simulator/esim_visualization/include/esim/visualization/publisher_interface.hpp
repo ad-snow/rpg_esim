@@ -17,7 +17,8 @@ public:
   virtual void imageCorruptedCallback(const ImagePtrVector& corrupted_images, Time t) {}
   virtual void depthmapCallback(const DepthmapPtrVector& depthmaps, Time t) {}
   virtual void opticFlowCallback(const OpticFlowPtrVector& optic_flows, Time t) {}
-  virtual void eventsCallback(const EventsVector& events) {}
+  // virtual void eventsCallback(const EventsVector& events) {}
+  virtual bool eventsCallback(const EventsVector& events) {}
   virtual void poseCallback(const Transformation& T_W_B, const TransformationVector& T_W_Cs, Time t) {}
   virtual void twistCallback(const AngularVelocityVector& ws, const LinearVelocityVector& vs, Time t) {}
   virtual void imuCallback(const Vector3& acc, const Vector3& gyr, Time t) {}

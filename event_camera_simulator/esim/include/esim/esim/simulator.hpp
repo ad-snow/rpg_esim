@@ -42,7 +42,7 @@ public:
 
   bool dataProviderCallback(const SimulatorData& sim_data);
 
-  void publishData(const SimulatorData &sim_data,
+  bool publishData(const SimulatorData &sim_data,
                    const EventsVector &events,
                    bool camera_simulator_success,
                    const ImagePtrVector &camera_images);
